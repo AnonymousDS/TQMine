@@ -28,7 +28,13 @@ void RagelGenerator::prepareAlphabetArr(int alphabetLength) {
         for (int j=0;j<MAX_EVENT_REPRESENTATION;j++) {
             for (int i = 0; i < bucketSize; i++) {
                 string repsentationMarker(1,(char)(97 + j));
-                repsentationMarker += to_string(i);
+                
+                //TODO: For now works only for less than 100 events. Increase this scope
+                if (bucketSize > 9 && i < 10){
+                    repsentationMarker += '0' + to_string(i); // takes care of A01,A02,A03...
+                } else {
+                    repsentationMarker += to_string(i);
+                }
 
                 alphabetArr.push_back(repsentationMarker);
                 alphabetVisitied.push_back(0);
@@ -461,6 +467,7 @@ string RagelGenerator::getFullRagelContent(string &fullRagelExpression) {
         long previousEventTime=0;
         long _eventTime = 0;
         int _quantValue = 0;
+        // string _quantValue = "";
         int currentTRECount = 0;
         int _has_event_entered = 0; // Determines if we enter an event stage in TRE. Gets reset immediately at M stage
         int _event_OR_quant_stage = 0; //Flips between 0 - unknown, 1 - Event, 2 - Quant
@@ -543,7 +550,9 @@ string RagelGenerator::getFullRagelContent(string &fullRagelExpression) {
                     //This would mean, the previous encounter was that of a Quant
                     numberList->push_back("");
                     numberList->push_back(to_string(_quantValue));
+                    // numberList->push_back(_quantValue);
                     _quantValue = 0;
+                    // _quantValue = "";
                 }
                 
                 if (_event_OR_quant_stage == 1) {
@@ -566,6 +575,8 @@ string RagelGenerator::getFullRagelContent(string &fullRagelExpression) {
                     _event_OR_quant_stage = 2;
                     
                     _quantValue = _quantValue*10 + (fc - '0');
+                    // _quantValue += fc;
+                    // _quantValue++;
                     
                     if (_has_event_entered != 0) {
                         currentTRECount++; //Increment TRE instance counter only if _has_event_entered was true. This takes care of multiple quant fields
